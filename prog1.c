@@ -5,6 +5,7 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <unistd.h>
+#include <string.h>
 #include <errno.h>
 
 /*
@@ -40,7 +41,8 @@ typedef struct{
 SigusCount* counter;
 int shm_id;
 
-int system_time;
+char* r1_msg = "SIGUSR1 received\n";
+char* r2_msg = "SIGUSR2 received\n";
 
 pid_t* create_handler_processes(int, int);
 pid_t* create_signaler_processes(int);
@@ -61,8 +63,6 @@ int main(int argc, char* argv[]){
 	Control execution time. ???
 	Wait for each child completion.
 	*/
-
-	system_time = 30;
 
 	shm_id = shmget(IPC_PRIVATE, sizeof(SigusCount), IPC_CREAT | 0666);
 
@@ -135,21 +135,22 @@ int main(int argc, char* argv[]){
 
 void r1_handler_process(){
 
+	signal(SIGUSR1, SIGUSR1_handler);
+
 	sigset_t saved_set;
 
 	sigset_t blocked_set;
 
-	sigaddset(&blocked_set, SIGUSR2);
+	sigaddset(&blocked_set, SIGUSR1);
 	
-        sigprocmask(SIG_BLOCK, &blocked_set, &saved_set);
+        sigprocmask(SIG_UNBLOCK, &blocked_set, &saved_set);
 
 	while(1){
 
-		signal(SIGUSR1, SIGUSR1_handler);
+		//signal(SIGUSR1, SIGUSR1_handler);
 
-		sleep(5);
+		//sleep(5);
 
-		break;
 	}
 }
 
@@ -157,7 +158,7 @@ void r2_handler_process(){
 
 	while(1){
 
-		break;		
+		//break;		
 	}
 
 }
@@ -169,7 +170,7 @@ void signaler_process(){
 	while(1){
 
 		// Invoke kill system call to request kernel to send signal SIGUSR1 to processes in this group.
-		killpg(group_pid, SIGUSR1);
+		killpg(0, SIGUSR1);
 
 		counter = (SigusCount*) shmat(shm_id, 0, 0);
 
@@ -177,24 +178,34 @@ void signaler_process(){
 
 		shmdt(counter);
 
-		break;
+		//break;
 	}
 }
 
 void reporter_process(){
 
-	FILE* fp = fopen("reports.txt", "w");
+	//FILE* fp = fopen("reports.txt", "w");
 
+	sigset_t saved_set;
+
+        sigset_t blocked_set;
+
+        sigaddset(&blocked_set, SIGUSR1);
 	
+	sigaddset(&blocked_set, SIGUSR2);
+
+        sigprocmask(SIG_UNBLOCK, &blocked_set, &saved_set);	
 
 	while(1){
 
-		break;	
+		//break;	
 		
 	}
 }
 
 void SIGUSR1_handler(int sig){
+
+	write(STDOUT_FILENO, r1_msg, strlen(r1_msg));
 
 	counter = (SigusCount*) shmat(shm_id, 0 ,0);
 
@@ -205,25 +216,44 @@ void SIGUSR1_handler(int sig){
 
 void SIGUSR2_handler(int sig){
 
+	write(STDOUT_FILENO, r2_msg, strlen(r2_msg));
 
+	counter = (SigusCount*) shmat(shm_id, 0, 0);
+	(counter->r2_received)++;
+	shmdt(counter);	
 }
 
 pid_t* create_handler_processes(int r1_num, int r2_num){
 
 	pid_t* handler_processes = malloc((r1_num + r2_num) * sizeof(pid_t));
 
+	if(handler_processes == NULL){
+		printf("Error: Memory Allocation Failed.\n");
+		exit(1);
+	}
+
 	int i = 0;
 
 	for(; i < r1_num; i++){
 		handler_processes[i] = fork();
-		if(handler_processes[i] == 0){
+		if(handler_processes[i] < 0){
+			printf("Forking Error\n");
+			exit(1);
+		}
+		else if(handler_processes[i] == 0){
+			
 			r1_handler_process();
+			
 			exit(1);
 		} 
 	}
 	for(; i < r1_num + r2_num; i++){
 		handler_processes[i] = fork();
-		if(handler_processes[i] == 0){
+		if(handler_processes[i] < 0){
+			printf("Forking Error\n");
+			exit(1);
+		}
+		else if(handler_processes[i] == 0){
 			r2_handler_process();
 			exit(1);
 		}
@@ -243,7 +273,11 @@ pid_t* create_signaler_processes(int num){
 	
 	for(int i = 0; i < num; i++){
 		signaler_processes[i] = fork();
-		if(signaler_processes[i] == 0){
+		if(signaler_processes[i] < 0){
+			printf("Forking Error\n");
+			exit(1);
+		}
+		else if(signaler_processes[i] == 0){
 			signaler_process();
 			exit(1);
 		}
@@ -256,9 +290,17 @@ pid_t* create_reporter_process(){
 
 	pid_t* reporter = malloc(1 * sizeof(pid_t));
 
-	reporter[0] = fork();
+	if(reporter == NULL){
+		printf("Error: Memory Allocation Failed\n");
+		exit(1);
+	}
 
-	if(reporter[0] == 0){
+	reporter[0] = fork();
+	if(reporter[0] < 0){
+		printf("Forking Error\n");
+		exit(1);
+	}
+	else if(reporter[0] == 0){
 		reporter_process();
 		exit(1);
 	}
