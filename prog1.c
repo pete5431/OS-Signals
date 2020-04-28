@@ -20,20 +20,20 @@ typedef struct{
 	int r1_sent;
 	int r2_sent;
 
-	pthread_mutex_t r1_received_lock;
-	pthread_mutex_t r1_sent_lock;
-	pthread_mutex_t r2_received_lock;
-	pthread_mutex_t r2_sent_lock;
-	pthread_mutexattr_t shared_attr;
+	//pthread_mutex_t r1_received_lock;
+	pthread_mutex_t r1_lock;
+	//pthread_mutex_t r2_received_lock;
+	pthread_mutex_t r2_lock;
 
 } Counter;
 
 typedef struct{
 
-	time_t start_time;
-
+	struct timespec start_time;
+	struct timespec end_time;
 	FILE* fp;
 	int report_count;
+	int r_count;
 	int r1_report_count;
 	int r2_report_count;
 	double r1_time_sum;
@@ -44,6 +44,8 @@ typedef struct{
 } Reporter;
 
 Counter* counter;
+Reporter* reporter;
+
 int shm_id;
 
 char* r1_msg = "SIGUSR1 received\n";
@@ -51,7 +53,6 @@ char* r2_msg = "SIGUSR2 received\n";
 
 pid_t* create_handler_processes(int, int);
 pid_t* create_signaler_processes(int);
-pid_t* create_reporter_process();
 
 void r1_handler_process();
 void r2_handler_process();
@@ -65,41 +66,54 @@ void initialize_globals();
 double rand_interval();
 double rand_prob();
 
+void block_SIGUSR1();
+void unblock_SIGUSR1();
+void block_SIGUSR2();
+void unblock_SIGUSR2();
+void block_SIGTERM();
+void unblock_SIGTERM();
+
 int main(int argc, char* argv[]){
 
-	srand(3394);
+	srand(time(NULL));
 
 	initialize_globals();
 
-	sigset_t blocked_set;
-	sigset_t saved_set;
-	sigemptyset(&blocked_set);
-	sigaddset(&blocked_set, SIGUSR1);
-	sigaddset(&blocked_set, SIGUSR2);
-	sigaddset(&blocked_set, SIGINT);
-	sigprocmask(SIG_BLOCK, &blocked_set, &saved_set);
+	block_SIGUSR1();
+	block_SIGUSR2();
+	block_SIGTERM();
 
 	counter = (Counter*) shmat(shm_id, 0, 0);
 
 	pid_t* handler_processes = create_handler_processes(2,2);
 
+	pid_t report_process = fork();
+	if(reporter_process < 0){
+		printf("Forking Error\n");
+		exit(1);
+	}
+	else if(report_process == 0){
+		reporter_process();
+		exit(1);
+	}
+
 	pid_t* signaler_processes = create_signaler_processes(3);
-	
-	pid_t* reporter_process = create_reporter_process();
 
-	sleep(10);
+	sleep(5);
 
-	killpg(0, SIGINT);
-
-	//shmdt(counter);
+	killpg(0, SIGTERM);
 
 	int i = 0;
 	int status = 0;
 
-        waitpid(reporter_process[0], &status, 0);
-        printf("Reporter Process %d exited with status %d\n", reporter_process[0], status);
+	//kill(report_process, SIGTERM);
+        waitpid(report_process, &status, 0);
+        printf("Reporter Process %d exited with status %d\n", report_process, status);
 
 	while(i <= 3){
+		
+		//kill(handler_processes[i], SIGTERM);
+
 		waitpid(handler_processes[i], &status, 0);
 		printf("Handler Process %d exited with status %d\n", handler_processes[i], status);
 		i++;
@@ -108,6 +122,9 @@ int main(int argc, char* argv[]){
 	i = 0;
 
 	while(i <= 2){
+
+		//kill(signaler_processes[i], SIGTERM);
+	
 		waitpid(signaler_processes[i], &status, 0);
 		printf("Signaler Process %d exited with status %d\n", signaler_processes[i], status);
 		i++;
@@ -124,31 +141,18 @@ int main(int argc, char* argv[]){
 	shmdt(counter);
 	free(handler_processes);
 	free(signaler_processes);
-	free(reporter_process);
 	shmctl(shm_id, IPC_RMID, NULL);
 
 	return 0;
 }
 
- // Signal generating processes run in a loop generating signals.
- // Picks one of the two at random.
- // Sends the signal to processes in its group (peers). ???
- // Random time delay between .01 and .1 seconds before next repetition of loop.
-
 void r1_handler_process(){
 
 	signal(SIGUSR1, signal_handler);
-	signal(SIGINT, signal_handler);
+	signal(SIGTERM, signal_handler);
 
-	sigset_t blocked_set;
-
-	sigemptyset(&blocked_set);	
-
-	sigaddset(&blocked_set, SIGUSR1);
-
-	sigaddset(&blocked_set, SIGINT);
-	
-        sigprocmask(SIG_UNBLOCK, &blocked_set, NULL);
+	unblock_SIGUSR1();
+	unblock_SIGTERM();
 
 	while(1){
 
@@ -159,87 +163,81 @@ void r1_handler_process(){
 void r2_handler_process(){
 
 	signal(SIGUSR2, signal_handler);
-	signal(SIGINT, signal_handler);
+	signal(SIGTERM, signal_handler);
 
-	sigset_t blocked_set;
-
-	sigemptyset(&blocked_set);
-
-	sigaddset(&blocked_set, SIGUSR2);
-
-	sigaddset(&blocked_set, SIGINT);
-
-	sigprocmask(SIG_UNBLOCK, &blocked_set, NULL);
+	unblock_SIGUSR2();
+	unblock_SIGTERM();
 
 	while(1){
 
 		pause();
 	}
-
 }
 
 void signaler_process(){
 
-	signal(SIGINT, signal_handler);
+	signal(SIGTERM, signal_handler);
+	
+	unblock_SIGTERM();
 
-	sigset_t blocked_set;
+	double interval = 0.0;
 
-        sigemptyset(&blocked_set);
+	double prob = 0.0;
 
-        sigaddset(&blocked_set, SIGINT);
-
-        sigprocmask(SIG_UNBLOCK, &blocked_set, NULL);
+	struct timespec tm;
 
 	while(1){
 
-		double interval = rand_interval();
+		interval = rand_interval();
 
-		double prob = rand_prob();
+		prob = rand_prob();
 
-		//counter = (Counter*) shmat(shm_id, 0, 0);
+		tm.tv_sec = 0;
+
+		tm.tv_nsec = interval * 1000000000;
+
+		printf("Rand Interval: %ld\n", tm.tv_nsec);
+
+		nanosleep(&tm, NULL);
 
 		if(prob < 0.50){
 			killpg(0, SIGUSR1);
 
-			pthread_mutex_lock(&(counter->r1_sent_lock));
+			pthread_mutex_lock(&(counter->r1_lock));
 		
 			(counter->r1_sent)++;
 
-			pthread_mutex_unlock(&(counter->r1_sent_lock));
+			pthread_mutex_unlock(&(counter->r1_lock));
 
 		}else{
 			killpg(0, SIGUSR2);
 
-			pthread_mutex_lock(&(counter->r2_sent_lock));
+			pthread_mutex_lock(&(counter->r1_lock));
 
 			(counter->r2_sent)++;
 
-			pthread_mutex_unlock(&(counter->r2_sent_lock));
+			pthread_mutex_unlock(&(counter->r1_lock));
 
 		}
 		// Invoke kill system call to request kernel to send signal SIGUSR1 to processes in this group.
-
-		//shmdt(counter);
-
-		sleep(interval);
 	}
 }
 
 void reporter_process(){
 
-	signal(SIGINT, signal_report_handler);
+	signal(SIGTERM, signal_report_handler);
 	signal(SIGUSR1, signal_report_handler);
 	signal(SIGUSR2, signal_report_handler);
 
-        sigset_t blocked_set;
+	reporter = (Reporter*) malloc(sizeof(Reporter));
 
-        sigaddset(&blocked_set, SIGUSR1);
-	
-	sigaddset(&blocked_set, SIGUSR2);
+	clock_gettime(CLOCK_MONOTONIC, &(reporter->start_time));
 
-	sigaddset(&blocked_set, SIGINT);
+	reporter->r_count = 0;
 
-        sigprocmask(SIG_UNBLOCK, &blocked_set, NULL);	
+	unblock_SIGUSR1();
+	unblock_SIGUSR2();
+	unblock_SIGTERM();
 
 	while(1){
 
@@ -258,50 +256,73 @@ double rand_prob(){
 void signal_handler(int sig){
 
 	if(sig == SIGUSR1){
-		write(STDOUT_FILENO, r1_msg, strlen(r1_msg));
+		//write(STDOUT_FILENO, r1_msg, strlen(r1_msg));
 
-		//signal(SIGUSR1, SIGUSR1_handler);
-
-		//counter = (Counter*) shmat(shm_id, 0, 0);
-
-		pthread_mutex_lock(&(counter->r1_received_lock));
+		pthread_mutex_lock(&(counter->r1_lock));
 
        		(counter->r1_received)++;
 
-		pthread_mutex_unlock(&(counter->r1_received_lock));
+		pthread_mutex_unlock(&(counter->r1_lock));
 
-		//shmdt(counter);
-	}else if(sig == SIGUSR2){
-		write(STDOUT_FILENO, r2_msg, strlen(r2_msg));
+	}
+	else if(sig == SIGUSR2){
+		//write(STDOUT_FILENO, r2_msg, strlen(r2_msg));
 
-        	//signal(SIGUSR2, SIGUSR2_handler);
-
-       		//counter = (Counter*) shmat(shm_id, 0, 0);
-
-        	pthread_mutex_lock(&(counter->r2_received_lock));
+        	pthread_mutex_lock(&(counter->r1_lock));
 
         	(counter->r2_received)++;
 
-        	pthread_mutex_unlock(&(counter->r2_received_lock));
-
-        	//shmdt(counter);      
-	}else if(sig == SIGINT){
+        	pthread_mutex_unlock(&(counter->r1_lock));
+     
+	}
+	else if(sig == SIGTERM){
 		shmdt(counter);
-		exit(1);
+		exit(EXIT_SUCCESS);
 	}
 }
 
 void signal_report_handler(int sig){
 
 	if(sig == SIGUSR1){
-		write(STDOUT_FILENO, r1_msg, strlen(r1_msg));
+		//write(STDOUT_FILENO, r1_msg, strlen(r1_msg));
+		//(reporter->report_count)++;
+
+		//pthread_mutex_lock(&(counter->r1_lock));
+
+		(reporter->r_count)++;
+
+		//pthread_mutex_unlock(&(counter->r1_lock));
+
+		/*		
+		if(reporter->report_count == 10){
+			reporter->report_count = 0;
+
+			
+
+
+			
+
+			char message[12];
+			clock_gettime(CLOCK_MONOTONIC, &(reporter->end_time));
+
+			double time_passed = (double) (reporter->end_time.tv_sec - reporter->start_time.tv_sec) + (double) (reporter->end_time.tv_nsec - reporter->start_time.tv_nsec) / 1000000000;
+
+			sprintf(message, "%f\n", time_passed);
+			
+			write(STDOUT_FILENO, message, strlen(message));
+		/
+
+		}
+		*/
 	}
 	else if(sig == SIGUSR2){
-		write(STDOUT_FILENO, r2_msg, strlen(r2_msg));
+		(reporter->r_count)++;
 	}
-	else if(sig == SIGINT){
+	else if(sig == SIGTERM){
+		printf("Reporter count: %d\n", reporter->r_count);
 		shmdt(counter);
-		exit(1);
+		free(reporter);
+		exit(EXIT_SUCCESS);
 	}
 }
 
@@ -318,14 +339,21 @@ void initialize_globals(){
         counter->r2_sent = 0;
 
         // Make mutex shared across processes using the following share attribute.
-        counter->shared_attr;
-        pthread_mutexattr_init(&(counter->shared_attr));
-        pthread_mutexattr_setpshared(&(counter->shared_attr), PTHREAD_PROCESS_SHARED);
+        pthread_mutexattr_t shared_attr;
+	pthread_mutexattr_t shared_attr2;
+        pthread_mutexattr_init(&(shared_attr));
+        pthread_mutexattr_setpshared(&(shared_attr), PTHREAD_PROCESS_SHARED);
 
-        pthread_mutex_init(&(counter->r1_received_lock), &(counter->shared_attr));
-        pthread_mutex_init(&(counter->r1_sent_lock), &(counter->shared_attr));
-	pthread_mutex_init(&(counter->r2_received_lock), &(counter->shared_attr));
-	pthread_mutex_init(&(counter->r2_sent_lock), &(counter->shared_attr));
+	pthread_mutexattr_init(&(shared_attr2));
+	pthread_mutexattr_setpshared(&(shared_attr2), PTHREAD_PROCESS_SHARED);
+
+        //pthread_mutex_init(&(counter->r1_received_lock), &(shared_attr));
+        pthread_mutex_init(&(counter->r1_lock), &(shared_attr));
+	//pthread_mutex_init(&(counter->r2_received_lock), &(shared_attr2));
+	pthread_mutex_init(&(counter->r2_lock), &(shared_attr2));
+
+	pthread_mutexattr_destroy(&shared_attr);
+	pthread_mutexattr_destroy(&shared_attr2);
 
         // Detach the shared memory.
         shmdt(counter);
@@ -394,23 +422,70 @@ pid_t* create_signaler_processes(int num){
 	return signaler_processes;
 } 
 
-pid_t* create_reporter_process(){
+void block_SIGUSR1(){
 
-	pid_t* reporter = malloc(1 * sizeof(pid_t));
+        sigset_t set;
 
-	if(reporter == NULL){
-		printf("Error: Memory Allocation Failed\n");
-		exit(1);
-	}
+        sigemptyset(&set);
 
-	reporter[0] = fork();
-	if(reporter[0] < 0){
-		printf("Forking Error\n");
-		exit(1);
-	}
-	else if(reporter[0] == 0){
-		reporter_process();
-		exit(1);
-	}
-	return reporter;
+        sigaddset(&set, SIGUSR1);
+
+        sigprocmask(SIG_BLOCK, &set, NULL);
+}
+
+void unblock_SIGUSR1(){
+
+	sigset_t set;
+
+        sigemptyset(&set);
+
+        sigaddset(&set, SIGUSR1);
+
+        sigprocmask(SIG_UNBLOCK, &set, NULL);
+}
+
+void block_SIGUSR2(){
+
+	sigset_t set;
+
+        sigemptyset(&set);
+
+        sigaddset(&set, SIGUSR2);
+
+        sigprocmask(SIG_BLOCK, &set, NULL);
+
+}
+
+void unblock_SIGUSR2(){
+
+	sigset_t set;
+
+        sigemptyset(&set);
+
+        sigaddset(&set, SIGUSR2);
+
+        sigprocmask(SIG_UNBLOCK, &set, NULL);
+}
+
+void block_SIGTERM(){
+
+	sigset_t set;
+
+        sigemptyset(&set);
+
+        sigaddset(&set, SIGTERM);
+
+        sigprocmask(SIG_BLOCK, &set, NULL);
+
+}
+
+void unblock_SIGTERM(){
+
+	sigset_t set;
+
+        sigemptyset(&set);
+
+        sigaddset(&set, SIGTERM);
+
+        sigprocmask(SIG_UNBLOCK, &set, NULL);
 }
