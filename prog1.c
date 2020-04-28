@@ -9,6 +9,8 @@
 #include <errno.h>
 #include <pthread.h>
 #include <time.h>
+#include <signal.h>
+#include <fcntl.h>
 
 // Two signals used for communication: SIGUSR1 and SIGUSR2
 // Shared signal generated/sent counter for both.
@@ -31,7 +33,7 @@ typedef struct{
 
 	struct timespec start_time;
 	struct timespec end_time;
-	FILE* fp;
+	int* fp;
 	int report_count;
 	int r_count;
 	int r1_report_count;
@@ -63,7 +65,7 @@ void signal_handler(int);
 void signal_report_handler(int);
 
 void initialize_globals();
-double rand_interval();
+void rand_sleep();
 double rand_prob();
 
 void block_SIGUSR1();
@@ -99,34 +101,41 @@ int main(int argc, char* argv[]){
 
 	pid_t* signaler_processes = create_signaler_processes(3);
 
-	sleep(5);
+	if(argc == 2){
 
-	killpg(0, SIGTERM);
+		int total = atoi(argv[1]);
 
+		while((counter->r1_received + counter->r2_received) < total){	
+
+		}
+
+		killpg(0, SIGTERM);
+
+	}else{
+		sleep(5);
+
+		killpg(0, SIGTERM);
+	}
+	
 	int i = 0;
 	int status = 0;
 
-	//kill(report_process, SIGTERM);
         waitpid(report_process, &status, 0);
         printf("Reporter Process %d exited with status %d\n", report_process, status);
 
-	while(i <= 3){
-		
-		//kill(handler_processes[i], SIGTERM);
+	while(i <= 2){
 
-		waitpid(handler_processes[i], &status, 0);
-		printf("Handler Process %d exited with status %d\n", handler_processes[i], status);
-		i++;
-	}
+                waitpid(signaler_processes[i], &status, 0);
+                printf("Signaler Process %d exited with status %d\n", signaler_processes[i], status);
+                i++;
+        }
 
 	i = 0;
 
-	while(i <= 2){
-
-		//kill(signaler_processes[i], SIGTERM);
-	
-		waitpid(signaler_processes[i], &status, 0);
-		printf("Signaler Process %d exited with status %d\n", signaler_processes[i], status);
+	while(i <= 3){
+		
+		waitpid(handler_processes[i], &status, 0);
+		printf("Handler Process %d exited with status %d\n", handler_processes[i], status);
 		i++;
 	}
 
@@ -180,28 +189,26 @@ void signaler_process(){
 	
 	unblock_SIGTERM();
 
-	double interval = 0.0;
-
 	double prob = 0.0;
-
-	struct timespec tm;
 
 	while(1){
 
-		interval = rand_interval();
+		rand_sleep();
 
 		prob = rand_prob();
 
-		tm.tv_sec = 0;
+		int signal;
 
-		tm.tv_nsec = interval * 1000000000;
+		if(prob < 0.5){
+			signal = SIGUSR1;
+		}else{
+			signal = SIGUSR2;
+		}
 
-		printf("Rand Interval: %ld\n", tm.tv_nsec);
+		killpg(0, signal);
 
-		nanosleep(&tm, NULL);
-
-		if(prob < 0.50){
-			killpg(0, SIGUSR1);
+		if(signal == SIGUSR1){
+			//killpg(0, SIGUSR1);
 
 			pthread_mutex_lock(&(counter->r1_lock));
 		
@@ -209,8 +216,9 @@ void signaler_process(){
 
 			pthread_mutex_unlock(&(counter->r1_lock));
 
-		}else{
-			killpg(0, SIGUSR2);
+		}
+		else{
+			//killpg(0, SIGUSR2);
 
 			pthread_mutex_lock(&(counter->r1_lock));
 
@@ -219,6 +227,7 @@ void signaler_process(){
 			pthread_mutex_unlock(&(counter->r1_lock));
 
 		}
+		
 		// Invoke kill system call to request kernel to send signal SIGUSR1 to processes in this group.
 	}
 }
@@ -235,6 +244,8 @@ void reporter_process(){
 
 	reporter->r_count = 0;
 
+	//*(reporter->fp) = open("reports.txt", O_RDONLY, S_IRWXU|S_IRWXG|S_IRWXO);
+
 	unblock_SIGUSR1();
 	unblock_SIGUSR2();
 	unblock_SIGTERM();
@@ -245,8 +256,17 @@ void reporter_process(){
 	}
 }
 
-double rand_interval(){
-	return ((double) rand() / RAND_MAX) * (0.09) + 0.01;
+void rand_sleep(){
+
+	double interval = ((double)rand() / (double)RAND_MAX) * (0.09) + 0.01;
+
+	struct timespec tm;
+
+        tm.tv_sec = 0;
+
+       	tm.tv_nsec = interval * 1000000000;
+
+        nanosleep(&tm, NULL);
 }
 
 double rand_prob(){
@@ -258,21 +278,21 @@ void signal_handler(int sig){
 	if(sig == SIGUSR1){
 		//write(STDOUT_FILENO, r1_msg, strlen(r1_msg));
 
-		pthread_mutex_lock(&(counter->r1_lock));
+		pthread_mutex_lock(&(counter->r2_lock));
 
        		(counter->r1_received)++;
 
-		pthread_mutex_unlock(&(counter->r1_lock));
+		pthread_mutex_unlock(&(counter->r2_lock));
 
 	}
 	else if(sig == SIGUSR2){
 		//write(STDOUT_FILENO, r2_msg, strlen(r2_msg));
 
-        	pthread_mutex_lock(&(counter->r1_lock));
+        	pthread_mutex_lock(&(counter->r2_lock));
 
         	(counter->r2_received)++;
 
-        	pthread_mutex_unlock(&(counter->r1_lock));
+        	pthread_mutex_unlock(&(counter->r2_lock));
      
 	}
 	else if(sig == SIGTERM){
@@ -283,24 +303,20 @@ void signal_handler(int sig){
 
 void signal_report_handler(int sig){
 
-	if(sig == SIGUSR1){
+	if(sig == SIGUSR1 | sig == SIGUSR2){
 		//write(STDOUT_FILENO, r1_msg, strlen(r1_msg));
 		//(reporter->report_count)++;
 
 		//pthread_mutex_lock(&(counter->r1_lock));
 
 		(reporter->r_count)++;
-
+	
 		//pthread_mutex_unlock(&(counter->r1_lock));
 
-		/*		
+		/*
+				
 		if(reporter->report_count == 10){
-			reporter->report_count = 0;
-
-			
-
-
-			
+			reporter->report_count = 0;		
 
 			char message[12];
 			clock_gettime(CLOCK_MONOTONIC, &(reporter->end_time));
@@ -309,14 +325,13 @@ void signal_report_handler(int sig){
 
 			sprintf(message, "%f\n", time_passed);
 			
-			write(STDOUT_FILENO, message, strlen(message));
-		/
+			//write(*(reporter->fp), r1_msg, strlen(r1_msg));
+
+			//write(*(reporter->fp), message, strlen(message));
 
 		}
 		*/
-	}
-	else if(sig == SIGUSR2){
-		(reporter->r_count)++;
+		
 	}
 	else if(sig == SIGTERM){
 		printf("Reporter count: %d\n", reporter->r_count);
@@ -340,20 +355,15 @@ void initialize_globals(){
 
         // Make mutex shared across processes using the following share attribute.
         pthread_mutexattr_t shared_attr;
-	pthread_mutexattr_t shared_attr2;
         pthread_mutexattr_init(&(shared_attr));
         pthread_mutexattr_setpshared(&(shared_attr), PTHREAD_PROCESS_SHARED);
-
-	pthread_mutexattr_init(&(shared_attr2));
-	pthread_mutexattr_setpshared(&(shared_attr2), PTHREAD_PROCESS_SHARED);
 
         //pthread_mutex_init(&(counter->r1_received_lock), &(shared_attr));
         pthread_mutex_init(&(counter->r1_lock), &(shared_attr));
 	//pthread_mutex_init(&(counter->r2_received_lock), &(shared_attr2));
-	pthread_mutex_init(&(counter->r2_lock), &(shared_attr2));
+	pthread_mutex_init(&(counter->r2_lock), &(shared_attr));
 
 	pthread_mutexattr_destroy(&shared_attr);
-	pthread_mutexattr_destroy(&shared_attr2);
 
         // Detach the shared memory.
         shmdt(counter);
