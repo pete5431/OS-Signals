@@ -15,6 +15,9 @@
 // Two signals used for communication: SIGUSR1 and SIGUSR2
 // Shared signal generated/sent counter for both.
 
+#define BILLION 1000000000;
+
+// Contains the global counters for SIGUSR1 and SIGUSR2.
 typedef struct{
 
 	int r1_received;
@@ -22,36 +25,39 @@ typedef struct{
 	int r1_sent;
 	int r2_sent;
 
-	//pthread_mutex_t r1_received_lock;
-	pthread_mutex_t r1_lock;
-	//pthread_mutex_t r2_received_lock;
-	pthread_mutex_t r2_lock;
+	pthread_mutex_t r1_received_lock;
+	pthread_mutex_t r1_sent_lock;
+	pthread_mutex_t r2_received_lock;
+	pthread_mutex_t r2_sent_lock;
 
 } Counter;
 
+// Contains the variables used to calculate statistics for reports.
 typedef struct{
 
-	struct timespec start_time;
-	struct timespec end_time;
-	int* fp;
-	int report_count;
+	struct timespec r1_start_time;
+	struct timespec r2_start_time;
+	struct timespec system_time;
+
 	int r_count;
+	int write_report;
+
+	int fp;
+	int report_count;
 	int r1_report_count;
 	int r2_report_count;
 	double r1_time_sum;
 	double r2_time_sum;
-	double previous_r1_time;
-	double previous_r2_time;
 
 } Reporter;
 
+// The global structs that will be in shared memory.
 Counter* counter;
 Reporter* reporter;
 
-int shm_id;
-
-char* r1_msg = "SIGUSR1 received\n";
-char* r2_msg = "SIGUSR2 received\n";
+// The id used to access the repective shared memories.
+int shm_id_counter;
+int shm_id_reporter;
 
 pid_t* create_handler_processes(int, int);
 pid_t* create_signaler_processes(int);
@@ -64,7 +70,8 @@ void reporter_process();
 void signal_handler(int);
 void signal_report_handler(int);
 
-void initialize_globals();
+void initialize_counter();
+void initialize_reporter();
 void rand_sleep();
 double rand_prob();
 
@@ -79,15 +86,18 @@ int main(int argc, char* argv[]){
 
 	srand(time(NULL));
 
-	initialize_globals();
+	initialize_counter();
+	initialize_reporter();
 
 	block_SIGUSR1();
 	block_SIGUSR2();
 	block_SIGTERM();
 
-	counter = (Counter*) shmat(shm_id, 0, 0);
+	counter = (Counter*) shmat(shm_id_counter, 0, 0);
 
 	pid_t* handler_processes = create_handler_processes(2,2);
+
+	reporter = (Reporter*) shmat(shm_id_reporter, 0, 0);
 
 	pid_t report_process = fork();
 	if(reporter_process < 0){
@@ -98,6 +108,8 @@ int main(int argc, char* argv[]){
 		reporter_process();
 		exit(1);
 	}
+
+	shmdt(reporter);
 
 	pid_t* signaler_processes = create_signaler_processes(3);
 
@@ -112,7 +124,7 @@ int main(int argc, char* argv[]){
 		killpg(0, SIGTERM);
 
 	}else{
-		sleep(5);
+		sleep(30);
 
 		killpg(0, SIGTERM);
 	}
@@ -148,9 +160,11 @@ int main(int argc, char* argv[]){
 	printf("R2 sent: %d\n", counter->r2_sent);
 
 	shmdt(counter);
+	shmdt(reporter);
 	free(handler_processes);
 	free(signaler_processes);
-	shmctl(shm_id, IPC_RMID, NULL);
+	shmctl(shm_id_counter, IPC_RMID, NULL);
+	shmctl(shm_id_reporter, IPC_RMID, NULL);
 
 	return 0;
 }
@@ -193,8 +207,6 @@ void signaler_process(){
 
 	while(1){
 
-		rand_sleep();
-
 		prob = rand_prob();
 
 		int signal;
@@ -208,26 +220,24 @@ void signaler_process(){
 		killpg(0, signal);
 
 		if(signal == SIGUSR1){
-			//killpg(0, SIGUSR1);
 
-			pthread_mutex_lock(&(counter->r1_lock));
+			pthread_mutex_lock(&(counter->r1_sent_lock));
 		
 			(counter->r1_sent)++;
 
-			pthread_mutex_unlock(&(counter->r1_lock));
-
+			pthread_mutex_unlock(&(counter->r1_sent_lock));
 		}
 		else{
-			//killpg(0, SIGUSR2);
 
-			pthread_mutex_lock(&(counter->r1_lock));
+			pthread_mutex_lock(&(counter->r2_sent_lock));
 
 			(counter->r2_sent)++;
 
-			pthread_mutex_unlock(&(counter->r1_lock));
-
+			pthread_mutex_unlock(&(counter->r2_sent_lock));
 		}
 		
+	
+		rand_sleep();
 		// Invoke kill system call to request kernel to send signal SIGUSR1 to processes in this group.
 	}
 }
@@ -238,21 +248,55 @@ void reporter_process(){
 	signal(SIGUSR1, signal_report_handler);
 	signal(SIGUSR2, signal_report_handler);
 
-	reporter = (Reporter*) malloc(sizeof(Reporter));
-
-	clock_gettime(CLOCK_MONOTONIC, &(reporter->start_time));
-
-	reporter->r_count = 0;
-
-	//*(reporter->fp) = open("reports.txt", O_RDONLY, S_IRWXU|S_IRWXG|S_IRWXO);
-
 	unblock_SIGUSR1();
 	unblock_SIGUSR2();
 	unblock_SIGTERM();
 
+	char message[100];
+	double r1_average = 0.0;
+	double r2_average = 0.0;
+	struct tm t;
+	time_t current_time;
+
 	while(1){
 
 		pause();
+
+		if(reporter->write_report){
+
+			current_time = time(NULL);
+
+			t = *localtime(&current_time);	
+
+			r1_average = reporter->r1_time_sum / reporter->r1_report_count; 
+
+			r2_average = reporter->r2_time_sum / reporter->r2_report_count;
+
+			pthread_mutex_lock(&(counter->r1_received_lock));
+			pthread_mutex_lock(&(counter->r2_received_lock));
+			pthread_mutex_lock(&(counter->r1_sent_lock));
+			pthread_mutex_lock(&(counter->r2_sent_lock));
+
+			sprintf(message, "System Time: %d:%d:%d\nSIGUSR1 count: %d SIGUSR2 count: %d\nSIGUSR1 sent: %d  SIGUSR2 sent: %d\nSIGUSR1 Average: %f SIGUSR2 Average: %f\n\n"
+				, t.tm_hour, t.tm_min, t.tm_sec
+				, counter->r1_received, counter->r2_received
+				, counter->r1_sent, counter->r2_sent
+				, r1_average, r2_average);
+	
+			pthread_mutex_unlock(&(counter->r1_received_lock));	
+			pthread_mutex_unlock(&(counter->r2_received_lock)); 
+			pthread_mutex_unlock(&(counter->r1_sent_lock)); 
+			pthread_mutex_unlock(&(counter->r2_sent_lock)); 
+
+			write(reporter->fp, message, strlen(message));
+
+			reporter->r1_report_count = 0;
+			reporter->r2_report_count = 0;
+			reporter->r1_time_sum = 0.0;
+			reporter->r2_time_sum = 0.0;
+		}
+
+		reporter->write_report = 0;
 	}
 }
 
@@ -264,7 +308,7 @@ void rand_sleep(){
 
         tm.tv_sec = 0;
 
-       	tm.tv_nsec = interval * 1000000000;
+       	tm.tv_nsec = interval * BILLION;
 
         nanosleep(&tm, NULL);
 }
@@ -276,23 +320,21 @@ double rand_prob(){
 void signal_handler(int sig){
 
 	if(sig == SIGUSR1){
-		//write(STDOUT_FILENO, r1_msg, strlen(r1_msg));
 
-		pthread_mutex_lock(&(counter->r2_lock));
+		pthread_mutex_lock(&(counter->r1_received_lock));
 
        		(counter->r1_received)++;
 
-		pthread_mutex_unlock(&(counter->r2_lock));
+		pthread_mutex_unlock(&(counter->r1_received_lock));
 
 	}
 	else if(sig == SIGUSR2){
-		//write(STDOUT_FILENO, r2_msg, strlen(r2_msg));
 
-        	pthread_mutex_lock(&(counter->r2_lock));
+        	pthread_mutex_lock(&(counter->r2_received_lock));
 
         	(counter->r2_received)++;
 
-        	pthread_mutex_unlock(&(counter->r2_lock));
+        	pthread_mutex_unlock(&(counter->r2_received_lock));
      
 	}
 	else if(sig == SIGTERM){
@@ -304,49 +346,64 @@ void signal_handler(int sig){
 void signal_report_handler(int sig){
 
 	if(sig == SIGUSR1 | sig == SIGUSR2){
-		//write(STDOUT_FILENO, r1_msg, strlen(r1_msg));
-		//(reporter->report_count)++;
-
-		//pthread_mutex_lock(&(counter->r1_lock));
+		
+		(reporter->report_count)++;
 
 		(reporter->r_count)++;
 	
-		//pthread_mutex_unlock(&(counter->r1_lock));
+		clock_gettime(CLOCK_MONOTONIC, &(reporter->system_time));
 
-		/*
-				
 		if(reporter->report_count == 10){
-			reporter->report_count = 0;		
 
-			char message[12];
-			clock_gettime(CLOCK_MONOTONIC, &(reporter->end_time));
+                        reporter->report_count = 0;
 
-			double time_passed = (double) (reporter->end_time.tv_sec - reporter->start_time.tv_sec) + (double) (reporter->end_time.tv_nsec - reporter->start_time.tv_nsec) / 1000000000;
+                        reporter->write_report = 1;
+                }
 
-			sprintf(message, "%f\n", time_passed);
-			
-			//write(*(reporter->fp), r1_msg, strlen(r1_msg));
+		double seconds_passed;
+                double nseconds_passed;
+                double time_passed;
 
-			//write(*(reporter->fp), message, strlen(message));
+		if(sig == SIGUSR1){
 
+			seconds_passed = (double) (reporter->system_time.tv_sec - reporter->r1_start_time.tv_sec);
+			nseconds_passed = (double) (reporter->system_time.tv_nsec - reporter->r1_start_time.tv_nsec) / BILLION;
+
+			reporter->r1_start_time = reporter->system_time;
+	
+			time_passed = seconds_passed + nseconds_passed;
+
+			reporter->r1_report_count++;
+			reporter->r1_time_sum += time_passed;
 		}
-		*/
-		
+		else if(sig == SIGUSR2){
+
+			seconds_passed = (double) (reporter->system_time.tv_sec - reporter->r2_start_time.tv_sec);
+			nseconds_passed = (double) (reporter->system_time.tv_nsec - reporter->r2_start_time.tv_nsec) / BILLION;
+
+			reporter->r2_start_time = reporter->system_time;
+
+			time_passed = seconds_passed + nseconds_passed;
+
+			reporter->r2_report_count++;
+			reporter->r2_time_sum += time_passed;
+		}
 	}
 	else if(sig == SIGTERM){
-		printf("Reporter count: %d\n", reporter->r_count);
 		shmdt(counter);
-		free(reporter);
+		printf("Reporter Count: %d\n", reporter->r_count);
+		close(reporter->fp);
+		shmdt(reporter);
 		exit(EXIT_SUCCESS);
 	}
 }
 
-void initialize_globals(){
+void initialize_counter(){
 
 	// Using the shm functions to create a shared memory that contains one SigusCount struct.
-        shm_id = shmget(IPC_PRIVATE, sizeof(Counter), IPC_CREAT | 0666);
+        shm_id_counter = shmget(IPC_PRIVATE, sizeof(Counter), IPC_CREAT | 0666);
 
-        counter = (Counter*) shmat(shm_id, 0, 0);
+        counter = (Counter*) shmat(shm_id_counter, 0, 0);
 
         counter->r1_received = 0;
         counter->r2_received = 0;
@@ -358,15 +415,42 @@ void initialize_globals(){
         pthread_mutexattr_init(&(shared_attr));
         pthread_mutexattr_setpshared(&(shared_attr), PTHREAD_PROCESS_SHARED);
 
-        //pthread_mutex_init(&(counter->r1_received_lock), &(shared_attr));
-        pthread_mutex_init(&(counter->r1_lock), &(shared_attr));
-	//pthread_mutex_init(&(counter->r2_received_lock), &(shared_attr2));
-	pthread_mutex_init(&(counter->r2_lock), &(shared_attr));
+        pthread_mutex_init(&(counter->r1_received_lock), &(shared_attr));
+        pthread_mutex_init(&(counter->r1_sent_lock), &(shared_attr));
+	pthread_mutex_init(&(counter->r2_received_lock), &(shared_attr));
+	pthread_mutex_init(&(counter->r2_sent_lock), &(shared_attr));
 
 	pthread_mutexattr_destroy(&shared_attr);
 
         // Detach the shared memory.
         shmdt(counter);
+}
+
+void initialize_reporter(){
+
+	shm_id_reporter = shmget(IPC_PRIVATE, sizeof(Reporter), IPC_CREAT | 0666);
+
+	reporter = (Reporter*) shmat(shm_id_reporter, 0, 0);
+
+	clock_gettime(CLOCK_MONOTONIC, &(reporter->r1_start_time));
+
+	clock_gettime(CLOCK_MONOTONIC, &(reporter->r2_start_time));
+
+        reporter->fp = open("reports.txt", O_WRONLY|O_CREAT|O_TRUNC, S_IRWXU|S_IRWXG|S_IRWXO);
+
+	reporter->r_count = 0;
+
+	reporter->report_count = 0;
+
+	reporter->r1_time_sum = 0.0;
+	
+	reporter->r2_time_sum = 0.0;
+
+	reporter->r1_report_count = 0;
+
+	reporter->r2_report_count = 0;
+
+	shmdt(reporter);
 }
 
 pid_t* create_handler_processes(int r1_num, int r2_num){
