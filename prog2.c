@@ -120,7 +120,7 @@ int main(int argc, char* argv[]){
 	}
 	else{
 		// If no total signal count is provided, by default sleep for the specified amount of seconds.
-		sleep(5);
+		sleep(30);
 	}	
 
 	// Cancel all threads by requesting cancellation.

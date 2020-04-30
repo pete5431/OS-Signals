@@ -131,7 +131,7 @@ int main(int argc, char* argv[]){
 		}
 	}else{
 		// Else just sleep for specified time.
-		sleep(5);
+		sleep(30);
 	}
 	
 	// Send SIGTERM to all processes to end all processes.
