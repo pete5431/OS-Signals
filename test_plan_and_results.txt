@@ -1,0 +1,503 @@
+CIS 3207 Signaling Project Test Plan:
+
+______________________________________________________________________________________________________________________________________________________________________________
+
+Before going into my test plans I would like to express the difficulties I had with this lab:
+
+The most challenging part of this project was program 1 where processes had to be used to listen in on signals sent from signal generators which were also processes.
+
+I tried many implementations to try and get the reporter, which was important in recording statistical data, to be consistent and accurate to record all signals sent by
+
+the signal generators. However, the reporter process itself ended up acting as more of a handler process instead of a reporter. So the numbers of signals the reporter 
+
+received could sometimes be on point or completely made no sense. I used pause and sleep but settled with sigsuspend for listening on signals. I included all signals in the
+
+mask for sigsuspend, and only removed SIGUSR1 and SIGUSR2 (and a SIGTERM which I will explain later). Even then the reporter process would still lose a lot of signals.
+
+Another difficulty was the system time. Since the signals were sent out in intervals less than a second, and would reach hundreds of thousands in seconds if left with no 
+
+interval, I couldn't use the sleep function to sleep for a certain interval after each repetition of the signal generator. So as an alternative I had to use nanosleep to 
+
+accurately sleep for the required amount of seconds. After that I had to dive further into the time functions to figure out ways to best display statistical data based off
+
+time intervals. Overall it went nicely.
+
+I used SIGTERM in program 1 as a way to signal to processes to exit and detach from memory, and other cleanup calls.
+______________________________________________________________________________________________________________________________________________________________________________
+
+Test Plan:
+
+-The files included for the results are select sample runs, which not match the test runs discussed here.
+
+
+
+
+Program 1:
+
+I included a bunch of print statements at the end of each execution to print the signal sent and received count for each signal, as well as the amount of signals the reporter
+
+got. Below I will include some runs and discuss signal losses and such. In the end I will compare Program 1 to 2.
+
+Example Run 1 30 seconds:
+
+Reporter Count: 1215
+SIGUSR1 Count: 1536
+SIGUSR1 Sent: 816
+SIGUSR2 Count: 1403
+SIGUSR2 Sent: 816
+
+The expected counts are SIGUSR1 = 1632 and SIGUSR2 = 1632 because each handler should catch one signal once. Thus the correct count should be twice the sent count.
+
+Thus the amount of signal losses for R1 = 96 and R2 = 229. The reporter had the most signal losses with 417 signals not counted.
+
+The amount of signal losses in the reporter might suggest since is the only process listening in on both, it is more prone to signal handler interrupts.
+
+What was also interesting throughout was that the reporter was lagging behind such that the other signal generators would send out more 
+
+signals by the time the reporter counted 10 signals it received. Even the numbers are confusing, the average should be accurate because it
+
+depends on 10 signals, and sums the time intervals for each signal type based off last occurence.
+
+System Time: 23:11:20
+SIGUSR1 count: 4 SIGUSR2 count: 18
+SIGUSR1 sent: 2  SIGUSR2 sent: 9
+SIGUSR1 Average: 0.097275 SIGUSR2 Average: 0.008545
+
+System Time: 23:11:20
+SIGUSR1 count: 12 SIGUSR2 count: 28
+SIGUSR1 sent: 6  SIGUSR2 sent: 16
+SIGUSR1 Average: 0.028755 SIGUSR2 Average: 0.045290
+
+So even though 11 signals were sent out, the reporter missed one.
+
+Example Run 2 30 seconds:
+
+cis-lclient15:~/OS-2020-Git/OS-Signals>./prog1
+Reporter Count: 1504
+R1 count: 1563
+R1 sent: 828
+R2 count: 1528
+R2 sent: 810
+
+Expected: R1 = 1656 / R2 = 1620 / Reporter = 1638 
+Loss: R1 Handler = 93 /  R2 Handler = 92 / Reporter = 134
+
+System Time: 0:50:6
+SIGUSR1 count: 813 SIGUSR2 count: 738
+SIGUSR1 sent: 445  SIGUSR2 sent: 414
+SIGUSR1 Average: 0.057626 SIGUSR2 Average: 0.019855
+
+System Time: 0:50:6
+SIGUSR1 count: 823 SIGUSR2 count: 750
+SIGUSR1 sent: 450  SIGUSR2 sent: 420
+SIGUSR1 Average: 0.023412 SIGUSR2 Average: 0.088909
+
+System Time: 0:50:6
+SIGUSR1 count: 836 SIGUSR2 count: 756
+SIGUSR1 sent: 459  SIGUSR2 sent: 423
+SIGUSR1 Average: 0.038067 SIGUSR2 Average: 0.032067
+
+System Time: 0:50:7
+SIGUSR1 count: 860 SIGUSR2 count: 756
+SIGUSR1 sent: 474  SIGUSR2 sent: 423
+SIGUSR1 Average: 0.031643 SIGUSR2 Average: -nan
+
+From the 1st report to 2nd the reporter lost 1 signal
+From 2nd to 3rd the reporter loss 2
+From 3rd to 4th report, no SIGUSR2 signals were sent and 5 signals from SIGUSR1 were lost.
+
+Every now in then, sometimes the average is -nan, which means a divide by zero happened, thus the count was recorded as zero.
+
+This means sometimes in the 10 signal interval, only one type of signal is sent.
+
+There were also quite a bit of signal losses in this one segment of the whole report file.
+
+This suggests that once again that maybe the signal handlers were affect by some sort of interrupt causing signal losses.
+
+Example Run 3 100000 signals:
+
+I tested 100000 signals based off the total signals received by handlers.
+
+The runs last for about 15 minutes, and would last 30 minutes if testing for 100000 signals sent.
+
+Below are small segments of the beginning of the run and at the end of the run.
+
+Start:
+
+System Time: 20:42:45
+SIGUSR1 count: 6 SIGUSR2 count: 11
+SIGUSR1 sent: 3  SIGUSR2 sent: 7
+SIGUSR1 Average: 0.054960 SIGUSR2 Average: 0.029561
+
+System Time: 20:42:45
+SIGUSR1 count: 10 SIGUSR2 count: 28
+SIGUSR1 sent: 5  SIGUSR2 sent: 15
+SIGUSR1 Average: 0.094182 SIGUSR2 Average: 0.018117
+
+System Time: 20:42:45
+SIGUSR1 count: 16 SIGUSR2 count: 41
+SIGUSR1 sent: 8  SIGUSR2 sent: 22
+SIGUSR1 Average: 0.069089 SIGUSR2 Average: 0.030249
+
+System Time: 20:42:45
+SIGUSR1 count: 18 SIGUSR2 count: 59
+SIGUSR1 sent: 9  SIGUSR2 sent: 31
+SIGUSR1 Average: 0.015664 SIGUSR2 Average: 0.018914
+
+Finish:
+
+System Time: 20:58:2
+SIGUSR1 count: 49354 SIGUSR2 count: 50574
+SIGUSR1 sent: 24854  SIGUSR2 sent: 25440
+SIGUSR1 Average: 0.016522 SIGUSR2 Average: -nan
+
+System Time: 20:58:2
+SIGUSR1 count: 49374 SIGUSR2 count: 50574
+SIGUSR1 sent: 24864  SIGUSR2 sent: 25440
+SIGUSR1 Average: 0.014072 SIGUSR2 Average: -nan
+
+System Time: 20:58:2
+SIGUSR1 count: 49382 SIGUSR2 count: 50586
+SIGUSR1 sent: 24868  SIGUSR2 sent: 25446
+SIGUSR1 Average: 0.066674 SIGUSR2 Average: 0.088829
+
+System Time: 20:58:2
+SIGUSR1 count: 49399 SIGUSR2 count: 50589
+SIGUSR1 sent: 24876  SIGUSR2 sent: 25448
+SIGUSR1 Average: 0.015411 SIGUSR2 Average: 0.123235
+
+Once again there are moments when one kind of signal isn't sent, and the result is -nan.
+
+But you can see in the finishing segment that between reports, the reporter caught all 10 signals sent.
+
+This is also reflected in the starting segment.
+
+So the reporter can be accurate at certain times.
+
+Surprisingly, only 3 SIGUSR2 signals were lost. 
+
+353 R1 signals were lost and the reporter lost a total of about 1000 signals (not shown).
+
+The average interval looks fine considering its a random time between 0.01 and 0.1.
+
+Sometimes it can be over 0.1 because it has been a longer time since receiving a signal of the respective type.
+
+The results were basically the same as the 30 second runs, just scaled up and minus the good luck with SIGUSR2.
+
+Example Run 4 100000 signals:
+
+Start:
+
+System Time: 8:23:2
+SIGUSR1 count: 12 SIGUSR2 count: 7
+SIGUSR1 sent: 6  SIGUSR2 sent: 4
+SIGUSR1 Average: 0.003085 SIGUSR2 Average: 0.036571
+
+System Time: 8:23:2
+SIGUSR1 count: 22 SIGUSR2 count: 17
+SIGUSR1 sent: 11  SIGUSR2 sent: 9
+SIGUSR1 Average: 0.054367 SIGUSR2 Average: 0.016973
+
+System Time: 8:23:2
+SIGUSR1 count: 36 SIGUSR2 count: 24
+SIGUSR1 sent: 18  SIGUSR2 sent: 13
+SIGUSR1 Average: 0.003657 SIGUSR2 Average: 0.044071
+
+System Time: 8:23:2
+SIGUSR1 count: 42 SIGUSR2 count: 38
+SIGUSR1 sent: 21  SIGUSR2 sent: 20
+SIGUSR1 Average: 0.036011 SIGUSR2 Average: 0.011268
+
+Finish:
+
+System Time: 8:40:24
+SIGUSR1 count: 50250 SIGUSR2 count: 49679
+SIGUSR1 sent: 28600  SIGUSR2 sent: 28245
+SIGUSR1 Average: 0.024573 SIGUSR2 Average: 0.010720
+
+System Time: 8:40:24
+SIGUSR1 count: 50264 SIGUSR2 count: 49686
+SIGUSR1 sent: 28607  SIGUSR2 sent: 28248
+SIGUSR1 Average: 0.038114 SIGUSR2 Average: 0.065535
+
+System Time: 8:40:24
+SIGUSR1 count: 50272 SIGUSR2 count: 49697
+SIGUSR1 sent: 28611  SIGUSR2 sent: 28254
+SIGUSR1 Average: 0.012359 SIGUSR2 Average: 0.039795
+
+System Time: 8:40:24
+SIGUSR1 count: 50284 SIGUSR2 count: 49706
+SIGUSR1 sent: 28617  SIGUSR2 sent: 28258
+SIGUSR1 Average: 0.047563 SIGUSR2 Average: 0.042244
+
+The run lasted about 17 minutes.
+
+This time the reporter lost a huge amount of signals, about 8735 signals.
+
+The R2 handler lost 6810 and the R1 handler lost 6950 
+
+The lost of signals for program 1 can be very large during certain runs, where the handlers and reporters
+
+simply aren't in sync with listening in on signals. Again this may be due to some interrupts during the signal
+
+handlers. The average interval looks like valid averages, and they fluctuate from report to report. This suggests
+
+that SIGUSR1 and SIGUSR2 were received in different time intervals. 
+
+In the small segments provided you can see signal losses of 1 here and there. Likely this occurred multiple
+
+times throughout the run, and caused a rather large amount of signal losses.
+
+
+
+
+
+Program 2:
+
+Example Run 1 30 seconds:
+
+R1 count: 1638
+R1 sent: 821
+R2 count: 1598
+R2 sent: 799
+Reporter count: 1618
+
+Loss: R1 = 4 / R2 = 0 / Reporter = 2
+
+From the losses, it can be seen that threads seem to have very little signal losses.
+
+Start:
+
+System Time: 9:6:28
+SIGUSR1 count: 12 SIGUSR2 count: 8
+SIGUSR1 sent: 6 SIGUSR2 sent: 4
+SIGUSR1 Average: 0.026031 SIGUSR2 Average: 0.015762
+
+System Time: 9:6:28
+SIGUSR1 count: 14 SIGUSR2 count: 26
+SIGUSR1 sent: 7 SIGUSR2 sent: 13
+SIGUSR1 Average: 0.204243 SIGUSR2 Average: 0.027792
+
+System Time: 9:6:29
+SIGUSR1 count: 28 SIGUSR2 count: 30
+SIGUSR1 sent: 14 SIGUSR2 sent: 15
+SIGUSR1 Average: 0.024873 SIGUSR2 Average: 0.075973
+
+System Time: 9:6:29
+SIGUSR1 count: 36 SIGUSR2 count: 42
+SIGUSR1 sent: 18 SIGUSR2 sent: 21
+SIGUSR1 Average: 0.029833 SIGUSR2 Average: 0.027313
+
+Finish:
+
+System Time: 9:6:57
+SIGUSR1 count: 1600 SIGUSR2 count: 1560
+SIGUSR1 sent: 802 SIGUSR2 sent: 780
+SIGUSR1 Average: 0.038324 SIGUSR2 Average: 0.033195
+
+System Time: 9:6:57
+SIGUSR1 count: 1604 SIGUSR2 count: 1576
+SIGUSR1 sent: 804 SIGUSR2 sent: 788
+SIGUSR1 Average: 0.063176 SIGUSR2 Average: 0.029977
+
+System Time: 9:6:58
+SIGUSR1 count: 1618 SIGUSR2 count: 1582
+SIGUSR1 sent: 811 SIGUSR2 sent: 791
+SIGUSR1 Average: 0.033865 SIGUSR2 Average: 0.044556
+
+System Time: 9:6:58
+SIGUSR1 count: 1629 SIGUSR2 count: 1590
+SIGUSR1 sent: 817 SIGUSR2 sent: 795
+SIGUSR1 Average: 0.037797 SIGUSR2 Average: 0.061644
+
+-The amount of signals received between each report is consistent (10 signals).
+-The average intervals look valid because intervals are between 0.01 and 0.1.
+
+Example Run 2 30 seconds:
+
+R1 count: 1709
+R1 sent: 855
+R2 count: 1583
+R2 sent: 792
+Reporter count: 1646
+
+Losses: R1 = 1 / R2 = 1 / Reporter = 1
+
+Again very little losses.
+
+Start: 
+
+System Time: 9:12:2
+SIGUSR1 count: 6 SIGUSR2 count: 14
+SIGUSR1 sent: 3 SIGUSR2 sent: 7
+SIGUSR1 Average: 0.044268 SIGUSR2 Average: 0.015266
+
+System Time: 9:12:2
+SIGUSR1 count: 16 SIGUSR2 count: 24
+SIGUSR1 sent: 8 SIGUSR2 sent: 12
+SIGUSR1 Average: 0.027544 SIGUSR2 Average: 0.035114
+
+System Time: 9:12:2
+SIGUSR1 count: 20 SIGUSR2 count: 40
+SIGUSR1 sent: 10 SIGUSR2 sent: 20
+SIGUSR1 Average: 0.091093 SIGUSR2 Average: 0.027295
+
+System Time: 9:12:3
+SIGUSR1 count: 32 SIGUSR2 count: 48
+SIGUSR1 sent: 16 SIGUSR2 sent: 24
+SIGUSR1 Average: 0.039117 SIGUSR2 Average: 0.046297
+
+Finish:
+
+System Time: 9:12:31
+SIGUSR1 count: 1665 SIGUSR2 count: 1555
+SIGUSR1 sent: 833 SIGUSR2 sent: 778
+SIGUSR1 Average: 0.032949 SIGUSR2 Average: 0.043415
+
+System Time: 9:12:31
+SIGUSR1 count: 1675 SIGUSR2 count: 1565
+SIGUSR1 sent: 838 SIGUSR2 sent: 783
+SIGUSR1 Average: 0.022880 SIGUSR2 Average: 0.031974
+
+System Time: 9:12:32
+SIGUSR1 count: 1687 SIGUSR2 count: 1573
+SIGUSR1 sent: 844 SIGUSR2 sent: 787
+SIGUSR1 Average: 0.027521 SIGUSR2 Average: 0.039086
+
+System Time: 9:12:32
+SIGUSR1 count: 1703 SIGUSR2 count: 1577
+SIGUSR1 sent: 852 SIGUSR2 sent: 789
+SIGUSR1 Average: 0.024813 SIGUSR2 Average: 0.047221
+
+-Once again the number of signals between reports is consistent.
+
+Example Run 3 100000 signals:
+
+Start: 
+
+System Time: 21:22:1
+SIGUSR1 count: 12 SIGUSR2 count: 8
+SIGUSR1 sent: 6 SIGUSR2 sent: 4
+SIGUSR1 Average: 0.020324 SIGUSR2 Average: 0.025131
+
+System Time: 21:22:1
+SIGUSR1 count: 24 SIGUSR2 count: 16
+SIGUSR1 sent: 12 SIGUSR2 sent: 8
+SIGUSR1 Average: 0.018623 SIGUSR2 Average: 0.035930
+
+System Time: 21:22:2
+SIGUSR1 count: 38 SIGUSR2 count: 22
+SIGUSR1 sent: 19 SIGUSR2 sent: 11
+SIGUSR1 Average: 0.022099 SIGUSR2 Average: 0.036602
+
+System Time: 21:22:2
+SIGUSR1 count: 44 SIGUSR2 count: 34
+SIGUSR1 sent: 22 SIGUSR2 sent: 17
+SIGUSR1 Average: 0.039602 SIGUSR2 Average: 0.026622
+
+Finish:
+
+System Time: 21:37:18
+SIGUSR1 count: 50049 SIGUSR2 count: 49878
+SIGUSR1 sent: 25027 SIGUSR2 sent: 24939
+SIGUSR1 Average: 0.055023 SIGUSR2 Average: 0.032008
+
+System Time: 21:37:19
+SIGUSR1 count: 50067 SIGUSR2 count: 49880
+SIGUSR1 sent: 25036 SIGUSR2 sent: 24940
+SIGUSR1 Average: 0.029834 SIGUSR2 Average: 0.075236
+
+System Time: 21:37:19
+SIGUSR1 count: 50077 SIGUSR2 count: 49890
+SIGUSR1 sent: 25041 SIGUSR2 sent: 24945
+SIGUSR1 Average: 0.039211 SIGUSR2 Average: 0.056693
+
+System Time: 21:37:19
+SIGUSR1 count: 50089 SIGUSR2 count: 49898
+SIGUSR1 sent: 25047 SIGUSR2 sent: 24949
+SIGUSR1 Average: 0.030369 SIGUSR2 Average: 0.051175
+
+-The reporter is consistent and didn't lose much signals between reports.
+-Losses: R1: 5 / R2: 0
+
+Example Run 4 100000 signals:
+
+Start:
+
+System Time: 8:47:35
+SIGUSR1 count: 16 SIGUSR2 count: 2
+SIGUSR1 sent: 8 SIGUSR2 sent: 1
+SIGUSR1 Average: 0.011592 SIGUSR2 Average: 0.069928
+
+System Time: 8:47:36
+SIGUSR1 count: 24 SIGUSR2 count: 14
+SIGUSR1 sent: 12 SIGUSR2 sent: 7
+SIGUSR1 Average: 0.048705 SIGUSR2 Average: 0.037140
+
+System Time: 8:47:36
+SIGUSR1 count: 30 SIGUSR2 count: 30
+SIGUSR1 sent: 15 SIGUSR2 sent: 15
+SIGUSR1 Average: 0.097058 SIGUSR2 Average: 0.028304
+
+System Time: 8:47:36
+SIGUSR1 count: 40 SIGUSR2 count: 40
+SIGUSR1 sent: 20 SIGUSR2 sent: 20
+SIGUSR1 Average: 0.041334 SIGUSR2 Average: 0.036372
+
+Finish:
+
+System Time: 9:2:56
+SIGUSR1 count: 49994 SIGUSR2 count: 49939
+SIGUSR1 sent: 25012 SIGUSR2 sent: 24984
+SIGUSR1 Average: 0.083672 SIGUSR2 Average: 0.030979
+
+System Time: 9:2:56
+SIGUSR1 count: 50006 SIGUSR2 count: 49947
+SIGUSR1 sent: 25018 SIGUSR2 sent: 24988
+SIGUSR1 Average: 0.036444 SIGUSR2 Average: 0.035235
+
+System Time: 9:2:56
+SIGUSR1 count: 50016 SIGUSR2 count: 49957
+SIGUSR1 sent: 25023 SIGUSR2 sent: 24993
+SIGUSR1 Average: 0.028109 SIGUSR2 Average: 0.039549
+
+System Time: 9:2:56
+SIGUSR1 count: 50026 SIGUSR2 count: 49966
+SIGUSR1 sent: 25028 SIGUSR2 sent: 24998
+SIGUSR1 Average: 0.025567 SIGUSR2 Average: 0.044903
+
+Losses: R1 = 30 / R2 = 30
+
+-Lost the same amount of R1 and R2 signals, but overall lost very little again.
+
+______________________________________________________________________________________________________________________________________________________________________________
+
+Results and Comparison:
+
+Overall program 2 with threads ran better than program 1 with processes. The amount of signal losses in program 1 covers a wide range and can be
+
+quite random at times. Program 2 on the other hand has shown in both part A and B that very signal losses occurred. 
+
+It is important to note that I used signal handler functions and the signal function in program 1, and in program 2 I used sigwait to make the
+
+thread itself the handler. Otherwise the way I create threads and processes and sent signals are in a very similar manner or order.
+
+The reason behind this difference I think may be because signal handler functions can be interrupted with another of the same signal, and in the
+
+case of the reporter process there can be quite a lot considering it handles both signals. The interrupts would cause another signal handler to 
+
+start, and sort starts a recursive stream of signal handler function calls. 
+
+In addition I think naturally signal losses occur because of signals being discarded. When a signal comes in it is pending, and while it is waiting
+
+for the handler to receive it, any other subsequent signals of the same type is discarded. So depending on the hold up possibly with the mutex access
+
+some signals may be discarded.
+
+The mutex I used was a single mutex to access the shared global counts. If it is reading or writing, the mutex is present. I tried removing the mutex
+
+and adding more, but overall the performance is the same. While the wait time for 100000 signals is very long, if you consider an average interval of
+
+0.05 seconds between signal generator repetitions, you would have 3 signals per 0.05 seconds in a perfect scenario. In order for 100000 signals to be
+
+sent, it would require about 28 minutes tops. So it makes sense for runs of 15-17 minutes for received signals, and 27-30 minutes for sent signals.

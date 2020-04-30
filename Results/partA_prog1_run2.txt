@@ -1,0 +1,600 @@
+System Time: 9:4:26
+SIGUSR1 count: 20 SIGUSR2 count: 0
+SIGUSR1 sent: 10  SIGUSR2 sent: 0
+SIGUSR1 Average: 0.007862 SIGUSR2 Average: -nan
+
+System Time: 9:4:26
+SIGUSR1 count: 38 SIGUSR2 count: 0
+SIGUSR1 sent: 19  SIGUSR2 sent: 0
+SIGUSR1 Average: 0.017582 SIGUSR2 Average: -nan
+
+System Time: 9:4:27
+SIGUSR1 count: 56 SIGUSR2 count: 0
+SIGUSR1 sent: 30  SIGUSR2 sent: 0
+SIGUSR1 Average: 0.021676 SIGUSR2 Average: -nan
+
+System Time: 9:4:27
+SIGUSR1 count: 64 SIGUSR2 count: 14
+SIGUSR1 sent: 33  SIGUSR2 sent: 7
+SIGUSR1 Average: 0.034857 SIGUSR2 Average: 0.100559
+
+System Time: 9:4:27
+SIGUSR1 count: 72 SIGUSR2 count: 24
+SIGUSR1 sent: 37  SIGUSR2 sent: 12
+SIGUSR1 Average: 0.050221 SIGUSR2 Average: 0.005184
+
+System Time: 9:4:27
+SIGUSR1 count: 88 SIGUSR2 count: 30
+SIGUSR1 sent: 45  SIGUSR2 sent: 15
+SIGUSR1 Average: 0.024391 SIGUSR2 Average: 0.078588
+
+System Time: 9:4:27
+SIGUSR1 count: 107 SIGUSR2 count: 30
+SIGUSR1 sent: 55  SIGUSR2 sent: 15
+SIGUSR1 Average: 0.020139 SIGUSR2 Average: -nan
+
+System Time: 9:4:28
+SIGUSR1 count: 120 SIGUSR2 count: 36
+SIGUSR1 sent: 61  SIGUSR2 sent: 18
+SIGUSR1 Average: 0.017863 SIGUSR2 Average: 0.113824
+
+System Time: 9:4:28
+SIGUSR1 count: 124 SIGUSR2 count: 54
+SIGUSR1 sent: 63  SIGUSR2 sent: 27
+SIGUSR1 Average: 0.000384 SIGUSR2 Average: 0.021531
+
+System Time: 9:4:28
+SIGUSR1 count: 132 SIGUSR2 count: 66
+SIGUSR1 sent: 67  SIGUSR2 sent: 33
+SIGUSR1 Average: 0.095347 SIGUSR2 Average: 0.027145
+
+System Time: 9:4:28
+SIGUSR1 count: 136 SIGUSR2 count: 81
+SIGUSR1 sent: 69  SIGUSR2 sent: 41
+SIGUSR1 Average: 0.000274 SIGUSR2 Average: 0.032028
+
+System Time: 9:4:28
+SIGUSR1 count: 142 SIGUSR2 count: 96
+SIGUSR1 sent: 72  SIGUSR2 sent: 48
+SIGUSR1 Average: 0.077279 SIGUSR2 Average: 0.028244
+
+System Time: 9:4:29
+SIGUSR1 count: 152 SIGUSR2 count: 104
+SIGUSR1 sent: 78  SIGUSR2 sent: 53
+SIGUSR1 Average: 0.074240 SIGUSR2 Average: 0.041911
+
+System Time: 9:4:29
+SIGUSR1 count: 160 SIGUSR2 count: 119
+SIGUSR1 sent: 83  SIGUSR2 sent: 60
+SIGUSR1 Average: 0.057291 SIGUSR2 Average: 0.028891
+
+System Time: 9:4:29
+SIGUSR1 count: 163 SIGUSR2 count: 132
+SIGUSR1 sent: 84  SIGUSR2 sent: 69
+SIGUSR1 Average: 0.000213 SIGUSR2 Average: 0.027217
+
+System Time: 9:4:29
+SIGUSR1 count: 173 SIGUSR2 count: 145
+SIGUSR1 sent: 89  SIGUSR2 sent: 75
+SIGUSR1 Average: 0.102584 SIGUSR2 Average: 0.032037
+
+System Time: 9:4:29
+SIGUSR1 count: 189 SIGUSR2 count: 147
+SIGUSR1 sent: 99  SIGUSR2 sent: 77
+SIGUSR1 Average: 0.019302 SIGUSR2 Average: 0.259372
+
+System Time: 9:4:30
+SIGUSR1 count: 202 SIGUSR2 count: 155
+SIGUSR1 sent: 107  SIGUSR2 sent: 81
+SIGUSR1 Average: 0.036617 SIGUSR2 Average: 0.039817
+
+System Time: 9:4:30
+SIGUSR1 count: 210 SIGUSR2 count: 171
+SIGUSR1 sent: 113  SIGUSR2 sent: 90
+SIGUSR1 Average: 0.055660 SIGUSR2 Average: 0.029485
+
+System Time: 9:4:30
+SIGUSR1 count: 217 SIGUSR2 count: 185
+SIGUSR1 sent: 117  SIGUSR2 sent: 98
+SIGUSR1 Average: 0.010609 SIGUSR2 Average: 0.035460
+
+System Time: 9:4:30
+SIGUSR1 count: 220 SIGUSR2 count: 203
+SIGUSR1 sent: 119  SIGUSR2 sent: 108
+SIGUSR1 Average: 0.139638 SIGUSR2 Average: 0.012930
+
+System Time: 9:4:30
+SIGUSR1 count: 235 SIGUSR2 count: 208
+SIGUSR1 sent: 127  SIGUSR2 sent: 111
+SIGUSR1 Average: 0.019382 SIGUSR2 Average: 0.038578
+
+System Time: 9:4:30
+SIGUSR1 count: 250 SIGUSR2 count: 216
+SIGUSR1 sent: 135  SIGUSR2 sent: 116
+SIGUSR1 Average: 0.033809 SIGUSR2 Average: 0.089953
+
+System Time: 9:4:31
+SIGUSR1 count: 266 SIGUSR2 count: 218
+SIGUSR1 sent: 144  SIGUSR2 sent: 117
+SIGUSR1 Average: 0.021405 SIGUSR2 Average: 0.000706
+
+System Time: 9:4:31
+SIGUSR1 count: 278 SIGUSR2 count: 224
+SIGUSR1 sent: 151  SIGUSR2 sent: 120
+SIGUSR1 Average: 0.027042 SIGUSR2 Average: 0.093134
+
+System Time: 9:4:31
+SIGUSR1 count: 293 SIGUSR2 count: 230
+SIGUSR1 sent: 158  SIGUSR2 sent: 123
+SIGUSR1 Average: 0.029103 SIGUSR2 Average: 0.033996
+
+System Time: 9:4:31
+SIGUSR1 count: 307 SIGUSR2 count: 236
+SIGUSR1 sent: 168  SIGUSR2 sent: 126
+SIGUSR1 Average: 0.030760 SIGUSR2 Average: 0.077044
+
+System Time: 9:4:32
+SIGUSR1 count: 312 SIGUSR2 count: 251
+SIGUSR1 sent: 171  SIGUSR2 sent: 138
+SIGUSR1 Average: 0.086661 SIGUSR2 Average: 0.058052
+
+System Time: 9:4:32
+SIGUSR1 count: 316 SIGUSR2 count: 267
+SIGUSR1 sent: 174  SIGUSR2 sent: 150
+SIGUSR1 Average: 0.204738 SIGUSR2 Average: 0.043422
+
+System Time: 9:4:32
+SIGUSR1 count: 328 SIGUSR2 count: 275
+SIGUSR1 sent: 183  SIGUSR2 sent: 156
+SIGUSR1 Average: 0.042803 SIGUSR2 Average: 0.073950
+
+System Time: 9:4:33
+SIGUSR1 count: 328 SIGUSR2 count: 295
+SIGUSR1 sent: 183  SIGUSR2 sent: 171
+SIGUSR1 Average: -nan SIGUSR2 Average: 0.033962
+
+System Time: 9:4:33
+SIGUSR1 count: 339 SIGUSR2 count: 304
+SIGUSR1 sent: 192  SIGUSR2 sent: 177
+SIGUSR1 Average: 0.114161 SIGUSR2 Average: 0.035288
+
+System Time: 9:4:33
+SIGUSR1 count: 344 SIGUSR2 count: 319
+SIGUSR1 sent: 195  SIGUSR2 sent: 188
+SIGUSR1 Average: 0.108028 SIGUSR2 Average: 0.059809
+
+System Time: 9:4:34
+SIGUSR1 count: 362 SIGUSR2 count: 321
+SIGUSR1 sent: 209  SIGUSR2 sent: 189
+SIGUSR1 Average: 0.055994 SIGUSR2 Average: 0.004662
+
+System Time: 9:4:34
+SIGUSR1 count: 374 SIGUSR2 count: 329
+SIGUSR1 sent: 218  SIGUSR2 sent: 195
+SIGUSR1 Average: 0.044778 SIGUSR2 Average: 0.143917
+
+System Time: 9:4:34
+SIGUSR1 count: 383 SIGUSR2 count: 341
+SIGUSR1 sent: 224  SIGUSR2 sent: 204
+SIGUSR1 Average: 0.071652 SIGUSR2 Average: 0.050083
+
+System Time: 9:4:34
+SIGUSR1 count: 389 SIGUSR2 count: 352
+SIGUSR1 sent: 228  SIGUSR2 sent: 212
+SIGUSR1 Average: 0.043668 SIGUSR2 Average: 0.030661
+
+System Time: 9:4:35
+SIGUSR1 count: 405 SIGUSR2 count: 358
+SIGUSR1 sent: 236  SIGUSR2 sent: 216
+SIGUSR1 Average: 0.041974 SIGUSR2 Average: 0.107139
+
+System Time: 9:4:35
+SIGUSR1 count: 415 SIGUSR2 count: 368
+SIGUSR1 sent: 243  SIGUSR2 sent: 224
+SIGUSR1 Average: 0.049088 SIGUSR2 Average: 0.068722
+
+System Time: 9:4:35
+SIGUSR1 count: 425 SIGUSR2 count: 374
+SIGUSR1 sent: 251  SIGUSR2 sent: 228
+SIGUSR1 Average: 0.055210 SIGUSR2 Average: 0.053176
+
+System Time: 9:4:35
+SIGUSR1 count: 440 SIGUSR2 count: 378
+SIGUSR1 sent: 260  SIGUSR2 sent: 231
+SIGUSR1 Average: 0.018629 SIGUSR2 Average: 0.062084
+
+System Time: 9:4:35
+SIGUSR1 count: 445 SIGUSR2 count: 391
+SIGUSR1 sent: 263  SIGUSR2 sent: 240
+SIGUSR1 Average: 0.087115 SIGUSR2 Average: 0.032679
+
+System Time: 9:4:36
+SIGUSR1 count: 453 SIGUSR2 count: 403
+SIGUSR1 sent: 269  SIGUSR2 sent: 249
+SIGUSR1 Average: 0.046058 SIGUSR2 Average: 0.031624
+
+System Time: 9:4:36
+SIGUSR1 count: 459 SIGUSR2 count: 416
+SIGUSR1 sent: 273  SIGUSR2 sent: 260
+SIGUSR1 Average: 0.034497 SIGUSR2 Average: 0.063790
+
+System Time: 9:4:36
+SIGUSR1 count: 465 SIGUSR2 count: 431
+SIGUSR1 sent: 278  SIGUSR2 sent: 270
+SIGUSR1 Average: 0.205678 SIGUSR2 Average: 0.035318
+
+System Time: 9:4:37
+SIGUSR1 count: 491 SIGUSR2 count: 431
+SIGUSR1 sent: 293  SIGUSR2 sent: 270
+SIGUSR1 Average: 0.038991 SIGUSR2 Average: -nan
+
+System Time: 9:4:37
+SIGUSR1 count: 503 SIGUSR2 count: 437
+SIGUSR1 sent: 300  SIGUSR2 sent: 275
+SIGUSR1 Average: 0.031131 SIGUSR2 Average: 0.172768
+
+System Time: 9:4:37
+SIGUSR1 count: 517 SIGUSR2 count: 446
+SIGUSR1 sent: 309  SIGUSR2 sent: 281
+SIGUSR1 Average: 0.049896 SIGUSR2 Average: 0.077585
+
+System Time: 9:4:38
+SIGUSR1 count: 529 SIGUSR2 count: 454
+SIGUSR1 sent: 318  SIGUSR2 sent: 287
+SIGUSR1 Average: 0.045384 SIGUSR2 Average: 0.074120
+
+System Time: 9:4:38
+SIGUSR1 count: 541 SIGUSR2 count: 464
+SIGUSR1 sent: 326  SIGUSR2 sent: 294
+SIGUSR1 Average: 0.087031 SIGUSR2 Average: 0.028230
+
+System Time: 9:4:38
+SIGUSR1 count: 546 SIGUSR2 count: 479
+SIGUSR1 sent: 329  SIGUSR2 sent: 303
+SIGUSR1 Average: 0.037638 SIGUSR2 Average: 0.058572
+
+System Time: 9:4:38
+SIGUSR1 count: 552 SIGUSR2 count: 493
+SIGUSR1 sent: 332  SIGUSR2 sent: 312
+SIGUSR1 Average: 0.141565 SIGUSR2 Average: 0.036633
+
+System Time: 9:4:39
+SIGUSR1 count: 564 SIGUSR2 count: 495
+SIGUSR1 sent: 339  SIGUSR2 sent: 314
+SIGUSR1 Average: 0.012050 SIGUSR2 Average: 0.089782
+
+System Time: 9:4:39
+SIGUSR1 count: 578 SIGUSR2 count: 505
+SIGUSR1 sent: 347  SIGUSR2 sent: 321
+SIGUSR1 Average: 0.056535 SIGUSR2 Average: 0.057476
+
+System Time: 9:4:39
+SIGUSR1 count: 599 SIGUSR2 count: 505
+SIGUSR1 sent: 359  SIGUSR2 sent: 321
+SIGUSR1 Average: 0.028134 SIGUSR2 Average: -nan
+
+System Time: 9:4:39
+SIGUSR1 count: 601 SIGUSR2 count: 525
+SIGUSR1 sent: 360  SIGUSR2 sent: 332
+SIGUSR1 Average: -nan SIGUSR2 Average: 0.056989
+
+System Time: 9:4:40
+SIGUSR1 count: 601 SIGUSR2 count: 544
+SIGUSR1 sent: 360  SIGUSR2 sent: 344
+SIGUSR1 Average: -nan SIGUSR2 Average: 0.025285
+
+System Time: 9:4:40
+SIGUSR1 count: 619 SIGUSR2 count: 546
+SIGUSR1 sent: 374  SIGUSR2 sent: 345
+SIGUSR1 Average: 0.069646 SIGUSR2 Average: -nan
+
+System Time: 9:4:40
+SIGUSR1 count: 625 SIGUSR2 count: 562
+SIGUSR1 sent: 378  SIGUSR2 sent: 357
+SIGUSR1 Average: 0.068420 SIGUSR2 Average: 0.059035
+
+System Time: 9:4:40
+SIGUSR1 count: 629 SIGUSR2 count: 578
+SIGUSR1 sent: 381  SIGUSR2 sent: 368
+SIGUSR1 Average: 0.111677 SIGUSR2 Average: 0.039588
+
+System Time: 9:4:41
+SIGUSR1 count: 635 SIGUSR2 count: 593
+SIGUSR1 sent: 386  SIGUSR2 sent: 378
+SIGUSR1 Average: 0.178177 SIGUSR2 Average: 0.040222
+
+System Time: 9:4:41
+SIGUSR1 count: 647 SIGUSR2 count: 601
+SIGUSR1 sent: 395  SIGUSR2 sent: 384
+SIGUSR1 Average: 0.050787 SIGUSR2 Average: 0.062427
+
+System Time: 9:4:41
+SIGUSR1 count: 653 SIGUSR2 count: 615
+SIGUSR1 sent: 399  SIGUSR2 sent: 395
+SIGUSR1 Average: 0.066082 SIGUSR2 Average: 0.057062
+
+System Time: 9:4:42
+SIGUSR1 count: 673 SIGUSR2 count: 617
+SIGUSR1 sent: 413  SIGUSR2 sent: 396
+SIGUSR1 Average: 0.035826 SIGUSR2 Average: 0.007524
+
+System Time: 9:4:42
+SIGUSR1 count: 683 SIGUSR2 count: 627
+SIGUSR1 sent: 420  SIGUSR2 sent: 404
+SIGUSR1 Average: 0.016027 SIGUSR2 Average: 0.084369
+
+System Time: 9:4:42
+SIGUSR1 count: 687 SIGUSR2 count: 643
+SIGUSR1 sent: 423  SIGUSR2 sent: 416
+SIGUSR1 Average: 0.154012 SIGUSR2 Average: 0.039739
+
+System Time: 9:4:42
+SIGUSR1 count: 700 SIGUSR2 count: 653
+SIGUSR1 sent: 431  SIGUSR2 sent: 423
+SIGUSR1 Average: 0.102619 SIGUSR2 Average: 0.053755
+
+System Time: 9:4:43
+SIGUSR1 count: 714 SIGUSR2 count: 657
+SIGUSR1 sent: 438  SIGUSR2 sent: 425
+SIGUSR1 Average: 0.017426 SIGUSR2 Average: 0.130701
+
+System Time: 9:4:43
+SIGUSR1 count: 720 SIGUSR2 count: 671
+SIGUSR1 sent: 441  SIGUSR2 sent: 432
+SIGUSR1 Average: 0.091654 SIGUSR2 Average: 0.025467
+
+System Time: 9:4:43
+SIGUSR1 count: 728 SIGUSR2 count: 683
+SIGUSR1 sent: 445  SIGUSR2 sent: 438
+SIGUSR1 Average: 0.060308 SIGUSR2 Average: 0.037639
+
+System Time: 9:4:43
+SIGUSR1 count: 744 SIGUSR2 count: 687
+SIGUSR1 sent: 453  SIGUSR2 sent: 440
+SIGUSR1 Average: 0.009561 SIGUSR2 Average: 0.105309
+
+System Time: 9:4:43
+SIGUSR1 count: 756 SIGUSR2 count: 695
+SIGUSR1 sent: 459  SIGUSR2 sent: 444
+SIGUSR1 Average: 0.038605 SIGUSR2 Average: 0.029984
+
+System Time: 9:4:44
+SIGUSR1 count: 762 SIGUSR2 count: 711
+SIGUSR1 sent: 462  SIGUSR2 sent: 452
+SIGUSR1 Average: 0.032971 SIGUSR2 Average: 0.043978
+
+System Time: 9:4:44
+SIGUSR1 count: 776 SIGUSR2 count: 717
+SIGUSR1 sent: 471  SIGUSR2 sent: 456
+SIGUSR1 Average: 0.060382 SIGUSR2 Average: 0.059215
+
+System Time: 9:4:44
+SIGUSR1 count: 792 SIGUSR2 count: 721
+SIGUSR1 sent: 483  SIGUSR2 sent: 459
+SIGUSR1 Average: 0.037771 SIGUSR2 Average: 0.070448
+
+System Time: 9:4:44
+SIGUSR1 count: 806 SIGUSR2 count: 729
+SIGUSR1 sent: 492  SIGUSR2 sent: 465
+SIGUSR1 Average: 0.046175 SIGUSR2 Average: 0.063536
+
+System Time: 9:4:45
+SIGUSR1 count: 810 SIGUSR2 count: 741
+SIGUSR1 sent: 494  SIGUSR2 sent: 474
+SIGUSR1 Average: 0.111780 SIGUSR2 Average: 0.045677
+
+System Time: 9:4:45
+SIGUSR1 count: 824 SIGUSR2 count: 747
+SIGUSR1 sent: 501  SIGUSR2 sent: 477
+SIGUSR1 Average: 0.006316 SIGUSR2 Average: 0.032336
+
+System Time: 9:4:45
+SIGUSR1 count: 826 SIGUSR2 count: 765
+SIGUSR1 sent: 502  SIGUSR2 sent: 486
+SIGUSR1 Average: 0.274014 SIGUSR2 Average: 0.015390
+
+System Time: 9:4:45
+SIGUSR1 count: 834 SIGUSR2 count: 777
+SIGUSR1 sent: 506  SIGUSR2 sent: 492
+SIGUSR1 Average: 0.050063 SIGUSR2 Average: 0.041647
+
+System Time: 9:4:45
+SIGUSR1 count: 848 SIGUSR2 count: 789
+SIGUSR1 sent: 513  SIGUSR2 sent: 498
+SIGUSR1 Average: 0.040720 SIGUSR2 Average: 0.055874
+
+System Time: 9:4:46
+SIGUSR1 count: 856 SIGUSR2 count: 802
+SIGUSR1 sent: 519  SIGUSR2 sent: 507
+SIGUSR1 Average: 0.078711 SIGUSR2 Average: 0.044432
+
+System Time: 9:4:46
+SIGUSR1 count: 872 SIGUSR2 count: 806
+SIGUSR1 sent: 531  SIGUSR2 sent: 510
+SIGUSR1 Average: 0.040010 SIGUSR2 Average: 0.150200
+
+System Time: 9:4:46
+SIGUSR1 count: 880 SIGUSR2 count: 818
+SIGUSR1 sent: 537  SIGUSR2 sent: 519
+SIGUSR1 Average: 0.066504 SIGUSR2 Average: 0.075508
+
+System Time: 9:4:47
+SIGUSR1 count: 884 SIGUSR2 count: 834
+SIGUSR1 sent: 540  SIGUSR2 sent: 531
+SIGUSR1 Average: 0.143678 SIGUSR2 Average: 0.041215
+
+System Time: 9:4:47
+SIGUSR1 count: 896 SIGUSR2 count: 842
+SIGUSR1 sent: 549  SIGUSR2 sent: 537
+SIGUSR1 Average: 0.050262 SIGUSR2 Average: 0.068996
+
+System Time: 9:4:47
+SIGUSR1 count: 912 SIGUSR2 count: 846
+SIGUSR1 sent: 561  SIGUSR2 sent: 540
+SIGUSR1 Average: 0.052961 SIGUSR2 Average: 0.025892
+
+System Time: 9:4:48
+SIGUSR1 count: 924 SIGUSR2 count: 854
+SIGUSR1 sent: 570  SIGUSR2 sent: 546
+SIGUSR1 Average: 0.022742 SIGUSR2 Average: 0.134016
+
+System Time: 9:4:48
+SIGUSR1 count: 932 SIGUSR2 count: 866
+SIGUSR1 sent: 576  SIGUSR2 sent: 555
+SIGUSR1 Average: 0.081587 SIGUSR2 Average: 0.062336
+
+System Time: 9:4:48
+SIGUSR1 count: 940 SIGUSR2 count: 878
+SIGUSR1 sent: 582  SIGUSR2 sent: 564
+SIGUSR1 Average: 0.090925 SIGUSR2 Average: 0.048861
+
+System Time: 9:4:48
+SIGUSR1 count: 952 SIGUSR2 count: 884
+SIGUSR1 sent: 591  SIGUSR2 sent: 567
+SIGUSR1 Average: 0.028878 SIGUSR2 Average: 0.050913
+
+System Time: 9:4:49
+SIGUSR1 count: 964 SIGUSR2 count: 892
+SIGUSR1 sent: 599  SIGUSR2 sent: 573
+SIGUSR1 Average: 0.050617 SIGUSR2 Average: 0.051605
+
+System Time: 9:4:49
+SIGUSR1 count: 982 SIGUSR2 count: 894
+SIGUSR1 sent: 612  SIGUSR2 sent: 575
+SIGUSR1 Average: 0.027397 SIGUSR2 Average: 0.342984
+
+System Time: 9:4:49
+SIGUSR1 count: 993 SIGUSR2 count: 900
+SIGUSR1 sent: 621  SIGUSR2 sent: 579
+SIGUSR1 Average: 0.031976 SIGUSR2 Average: 0.048495
+
+System Time: 9:4:49
+SIGUSR1 count: 1005 SIGUSR2 count: 912
+SIGUSR1 sent: 629  SIGUSR2 sent: 585
+SIGUSR1 Average: 0.049695 SIGUSR2 Average: 0.040067
+
+System Time: 9:4:50
+SIGUSR1 count: 1020 SIGUSR2 count: 918
+SIGUSR1 sent: 639  SIGUSR2 sent: 588
+SIGUSR1 Average: 0.028132 SIGUSR2 Average: 0.064006
+
+System Time: 9:4:50
+SIGUSR1 count: 1037 SIGUSR2 count: 921
+SIGUSR1 sent: 651  SIGUSR2 sent: 590
+SIGUSR1 Average: 0.025120 SIGUSR2 Average: 0.171069
+
+System Time: 9:4:50
+SIGUSR1 count: 1041 SIGUSR2 count: 942
+SIGUSR1 sent: 654  SIGUSR2 sent: 602
+SIGUSR1 Average: 0.140664 SIGUSR2 Average: 0.041690
+
+System Time: 9:4:50
+SIGUSR1 count: 1049 SIGUSR2 count: 954
+SIGUSR1 sent: 659  SIGUSR2 sent: 609
+SIGUSR1 Average: 0.114283 SIGUSR2 Average: 0.024591
+
+System Time: 9:4:51
+SIGUSR1 count: 1055 SIGUSR2 count: 968
+SIGUSR1 sent: 663  SIGUSR2 sent: 618
+SIGUSR1 Average: 0.034012 SIGUSR2 Average: 0.046712
+
+System Time: 9:4:51
+SIGUSR1 count: 1064 SIGUSR2 count: 981
+SIGUSR1 sent: 669  SIGUSR2 sent: 627
+SIGUSR1 Average: 0.074911 SIGUSR2 Average: 0.030852
+
+System Time: 9:4:51
+SIGUSR1 count: 1080 SIGUSR2 count: 984
+SIGUSR1 sent: 681  SIGUSR2 sent: 630
+SIGUSR1 Average: 0.033999 SIGUSR2 Average: 0.156387
+
+System Time: 9:4:51
+SIGUSR1 count: 1092 SIGUSR2 count: 993
+SIGUSR1 sent: 690  SIGUSR2 sent: 636
+SIGUSR1 Average: 0.041890 SIGUSR2 Average: 0.039119
+
+System Time: 9:4:52
+SIGUSR1 count: 1104 SIGUSR2 count: 1000
+SIGUSR1 sent: 699  SIGUSR2 sent: 642
+SIGUSR1 Average: 0.040167 SIGUSR2 Average: 0.075285
+
+System Time: 9:4:52
+SIGUSR1 count: 1116 SIGUSR2 count: 1009
+SIGUSR1 sent: 708  SIGUSR2 sent: 648
+SIGUSR1 Average: 0.057068 SIGUSR2 Average: 0.057562
+
+System Time: 9:4:52
+SIGUSR1 count: 1124 SIGUSR2 count: 1021
+SIGUSR1 sent: 714  SIGUSR2 sent: 657
+SIGUSR1 Average: 0.060498 SIGUSR2 Average: 0.059509
+
+System Time: 9:4:53
+SIGUSR1 count: 1132 SIGUSR2 count: 1033
+SIGUSR1 sent: 720  SIGUSR2 sent: 666
+SIGUSR1 Average: 0.085379 SIGUSR2 Average: 0.036515
+
+System Time: 9:4:53
+SIGUSR1 count: 1144 SIGUSR2 count: 1041
+SIGUSR1 sent: 729  SIGUSR2 sent: 672
+SIGUSR1 Average: 0.060556 SIGUSR2 Average: 0.076423
+
+System Time: 9:4:53
+SIGUSR1 count: 1152 SIGUSR2 count: 1053
+SIGUSR1 sent: 735  SIGUSR2 sent: 681
+SIGUSR1 Average: 0.022051 SIGUSR2 Average: 0.063127
+
+System Time: 9:4:53
+SIGUSR1 count: 1160 SIGUSR2 count: 1065
+SIGUSR1 sent: 741  SIGUSR2 sent: 690
+SIGUSR1 Average: 0.108061 SIGUSR2 Average: 0.035636
+
+System Time: 9:4:54
+SIGUSR1 count: 1168 SIGUSR2 count: 1077
+SIGUSR1 sent: 747  SIGUSR2 sent: 699
+SIGUSR1 Average: 0.036125 SIGUSR2 Average: 0.054118
+
+System Time: 9:4:54
+SIGUSR1 count: 1184 SIGUSR2 count: 1081
+SIGUSR1 sent: 759  SIGUSR2 sent: 702
+SIGUSR1 Average: 0.055605 SIGUSR2 Average: 0.045426
+
+System Time: 9:4:54
+SIGUSR1 count: 1192 SIGUSR2 count: 1093
+SIGUSR1 sent: 765  SIGUSR2 sent: 711
+SIGUSR1 Average: 0.080775 SIGUSR2 Average: 0.069641
+
+System Time: 9:4:55
+SIGUSR1 count: 1200 SIGUSR2 count: 1105
+SIGUSR1 sent: 771  SIGUSR2 sent: 720
+SIGUSR1 Average: 0.067545 SIGUSR2 Average: 0.050339
+
+System Time: 9:4:55
+SIGUSR1 count: 1205 SIGUSR2 count: 1121
+SIGUSR1 sent: 774  SIGUSR2 sent: 728
+SIGUSR1 Average: 0.031028 SIGUSR2 Average: 0.047336
+
+System Time: 9:4:55
+SIGUSR1 count: 1214 SIGUSR2 count: 1137
+SIGUSR1 sent: 780  SIGUSR2 sent: 737
+SIGUSR1 Average: 0.090523 SIGUSR2 Average: 0.031248
+
+System Time: 9:4:55
+SIGUSR1 count: 1223 SIGUSR2 count: 1150
+SIGUSR1 sent: 786  SIGUSR2 sent: 746
+SIGUSR1 Average: 0.065792 SIGUSR2 Average: 0.057748
+
+System Time: 9:4:56
+SIGUSR1 count: 1227 SIGUSR2 count: 1166
+SIGUSR1 sent: 789  SIGUSR2 sent: 758
+SIGUSR1 Average: 0.061156 SIGUSR2 Average: 0.029227
+
+System Time: 9:4:56
+SIGUSR1 count: 1233 SIGUSR2 count: 1180
+SIGUSR1 sent: 794  SIGUSR2 sent: 768
+SIGUSR1 Average: 0.161760 SIGUSR2 Average: 0.030542
+
+System Time: 9:4:56
+SIGUSR1 count: 1246 SIGUSR2 count: 1186
+SIGUSR1 sent: 801  SIGUSR2 sent: 771
+SIGUSR1 Average: 0.019071 SIGUSR2 Average: 0.083588
+
