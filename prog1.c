@@ -118,6 +118,7 @@ int main(int argc, char* argv[]){
 
 	// Attach shared memory for counter.
 	counter = (Counter*) shmat(shm_id_counter, 0, 0);
+	reporter = (Reporter*) shmat(shm_id_reporter, 0, 0);
 
 	// Create processes.
 	create_processes();
@@ -157,6 +158,8 @@ int main(int argc, char* argv[]){
 	
 	printf("R2 sent: %d\n", counter->r2_sent);
 
+	printf("Report count: %d\n", reporter->r_count);
+	
 	// Detach and destroy shared memory.
 	shmdt(counter);
 	shmdt(reporter);
@@ -285,7 +288,7 @@ void reporter_process(){
 	
 		// Suspend until SIGUSR1, SIGUSR2, or SIGTERM is received.
 		sigsuspend(&wait_mask);
-
+		
 		// If the flag for write_report is true.
 		if(reporter->write_report){
 		
@@ -366,6 +369,7 @@ void signal_handler(int sig){
 	}
 	else if(sig == SIGTERM){
 		shmdt(counter);
+		shmdt(reporter);
 		exit(EXIT_SUCCESS);
 	}
 }
@@ -437,7 +441,6 @@ void signal_report_handler(int sig){
 	else if(sig == SIGTERM){
 		// If signal is sigterm, detach from all shared memory, report the report count, and exit.
 		shmdt(counter);
-		printf("Reporter Count: %d\n", reporter->r_count);
 		close(reporter->fp);
 		shmdt(reporter);
 		exit(EXIT_SUCCESS);
@@ -515,9 +518,7 @@ void create_processes(){
 		}
 		else if(processes[i] == 0){
 			if(i == 0){	
-				reporter = (Reporter*) shmat(shm_id_reporter, 0, 0);
 				reporter_process();
-				shmdt(reporter);
 				exit(1);
 			}
 			else if(i == 1){
